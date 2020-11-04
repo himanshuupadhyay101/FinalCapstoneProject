@@ -60,7 +60,7 @@ branch 'main'
 		//	  )
 		sh "pwd"
 		
-        sh "kubectl apply -f kubernetes/ mysql-deployment.yml"
+        sh "kubectl apply -f kubernetes/mysql-deployment.yml"
 		}
             post {
 		    always{       mail to: "himanshu.upadhayay@knoldus.com",
