@@ -24,7 +24,7 @@ metadata:
 provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd
-  #zone: us-central1-a
+  
 ---
 # PVC for Mysql Storage
 apiVersion: v1
@@ -44,7 +44,7 @@ spec:
   storageClassName: "fast" 
 
 ---
-# Configure 'Deployment' of mysql server
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -54,7 +54,7 @@ metadata:
     app: mysql
     tier: database
 spec:
-  selector: # mysql Pod Should contain same labels
+  selector: 
     matchLabels:
       app: mysql
       tier: database
@@ -62,32 +62,32 @@ spec:
     type: Recreate
   template:
     metadata:
-      labels: # Must match 'Service' and 'Deployment' selectors
+      labels: 
         app: mysql
         tier: database
     spec:
       containers:
-        - image: mysql:5.7 # image from docker-hub
+        - image: mysql:5.7 
           args:
             - "--ignore-db-dir=lost+found" # Workaround for https://github.com/docker-library/mysql/issues/186
           name: mysql
           env:
-            - name: MYSQL_ROOT_PASSWORD # Setting Root Password of mysql From a 'Secret'
+            - name: MYSQL_ROOT_PASSWORD 
               valueFrom:
                 secretKeyRef:
-                  name: db-admin # Name of the 'Secret'
-                  key: password   # 'key' inside the Secret which contains required 'value'
-            - name: MYSQL_USER # Setting USER username on mysql From a 'Secret'
+                  name: db-admin 
+                  key: password   
+            - name: MYSQL_USER 
               valueFrom:
                 secretKeyRef:
                   name: db-user
                   key: username
-            - name: MYSQL_PASSWORD # Setting USER Password on mysql From a 'Secret'
+            - name: MYSQL_PASSWORD 
               valueFrom:
                 secretKeyRef:
                   name: db-user
                   key: password
-            - name: MYSQL_DATABASE # Setting Database Name from a 'ConfigMap'
+            - name: MYSQL_DATABASE 
               valueFrom:
                 configMapKeyRef:
                   name: db-config
@@ -95,10 +95,10 @@ spec:
           ports:
             - containerPort: 3306
               name: mysql
-          volumeMounts:        # Mounting volume obtained from Persistent Volume Claim
+          volumeMounts:        
             - name: mysql-persistent-storage
-              mountPath: /var/lib/mysql #This is the path in the container on which the mounting will take place.
+              mountPath: /var/lib/mysql 
       volumes:
-        - name: mysql-persistent-storage # Obtaining 'volume' from PVC
+        - name: mysql-persistent-storage 
           persistentVolumeClaim:
             claimName: mysql-pv-claim
