@@ -1,31 +1,28 @@
 pipeline{
 agent any
-	tools { 
-        maven 'Maven 3.6.0'
-        jdk 'jdk8' 
-         }
+	
 stages
 {
 stage('Compile')
 {
    steps{ 
-	   
-            sh "mvn clean compile"
-          }
-   
-}		
+	  sh "mvn clean compile"
+	   echo "Compilation Completed"
+         }
+ }		
 				
 stage('Testing')
 {
    steps{
      sh "mvn test"
+     echo "Testing Completed"
         }
 }
 stage('packaging')
-{
-when{   
-branch 'main'
+{when { 
+	anyOf { branch 'main'; branch 'development' }
 }
+
    steps{
 	sh "mvn package"                                                                  //sbt package vs sbt assembly
 	}
@@ -50,7 +47,9 @@ branch 'main'
 	  sh "docker login -u himanshu1018 -p ${DOCKER_HUB_CREDENTIALS}"
           sh " docker push himanshu1018/finalcapstone:$BUILD_NUMBER"
 			       }
-	   }
+	sh 'docker rmi himanshu1018/finalcapstone:$BUILD_NUMBER'
+        sh "echo ###########Local Image removed##########" 
+     }
 }	
 stage('Deploy to K8')
 {
@@ -65,8 +64,14 @@ branch 'main'
 	    // enableConfigSubstitution: true
 		//	  )
 		sh "pwd"
+	sh "kubectl apply -f kubernetes/namespace.yml"
+        sh "kubectl apply -f kubernetes/mysql-admin-secrets.yml"
+	sh "kubectl apply -f kubernetes/mysql-configmap.yml"
+	sh "kubectl apply -f kubernetes/mysql-user-secrets.yml"
+	sh "kubectl apply -f kubernetes/mysql-deployment.yml"
+	sh "kubectl apply -f kubernetes/student-deployment.yml"
 		
-        sh "kubectl apply -f kubernetes/mysql-deployment.yml"
+		
 		}
             post {
 		    always{       mail to: "himanshu.upadhayay@knoldus.com",
