@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql  
+  namespace: test
   labels:
     app: mysql
     tier: database
@@ -15,11 +16,22 @@ spec:
     tier: database
   clusterIP: None
 ---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: fast
+  namespace: test
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+  #zone: us-central1-a
+---
 # PVC for Mysql Storage
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pv-claim 
+  namespace: test
   labels:
     app: mysql
     tier: database
@@ -28,18 +40,21 @@ spec:
     - ReadWriteOnce   
   resources:
     requests:
-      storage: 1Gi   
+      storage: 1Gi  
+  storageClassName: "fast" 
+
 ---
 # Configure 'Deployment' of mysql server
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
+  namespace: test
   labels:
     app: mysql
     tier: database
 spec:
-  selector: 
+  selector: # mysql Pod Should contain same labels
     matchLabels:
       app: mysql
       tier: database
@@ -47,7 +62,7 @@ spec:
     type: Recreate
   template:
     metadata:
-      labels: 
+      labels: # Must match 'Service' and 'Deployment' selectors
         app: mysql
         tier: database
     spec:
@@ -57,22 +72,22 @@ spec:
             - "--ignore-db-dir=lost+found" # Workaround for https://github.com/docker-library/mysql/issues/186
           name: mysql
           env:
-            - name: MYSQL_ROOT_PASSWORD 
+            - name: MYSQL_ROOT_PASSWORD # Setting Root Password of mysql From a 'Secret'
               valueFrom:
                 secretKeyRef:
-                  name: db-admin 
-                  key: password   
-            - name: MYSQL_USER 
+                  name: db-admin # Name of the 'Secret'
+                  key: password   # 'key' inside the Secret which contains required 'value'
+            - name: MYSQL_USER # Setting USER username on mysql From a 'Secret'
               valueFrom:
                 secretKeyRef:
                   name: db-user
                   key: username
-            - name: MYSQL_PASSWORD 
+            - name: MYSQL_PASSWORD # Setting USER Password on mysql From a 'Secret'
               valueFrom:
                 secretKeyRef:
                   name: db-user
                   key: password
-            - name: MYSQL_DATABASE 
+            - name: MYSQL_DATABASE # Setting Database Name from a 'ConfigMap'
               valueFrom:
                 configMapKeyRef:
                   name: db-config
@@ -80,10 +95,10 @@ spec:
           ports:
             - containerPort: 3306
               name: mysql
-          volumeMounts:        
+          volumeMounts:        # Mounting volume obtained from Persistent Volume Claim
             - name: mysql-persistent-storage
               mountPath: /var/lib/mysql #This is the path in the container on which the mounting will take place.
       volumes:
-        - name: mysql-persistent-storage 
+        - name: mysql-persistent-storage # Obtaining 'volume' from PVC
           persistentVolumeClaim:
             claimName: mysql-pv-claim

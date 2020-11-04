@@ -42,8 +42,5 @@ public class StudentController {
 		studentRepository.deleteById(id);
 		return "Deleted Student Successfully::"+id;
 	}
-	@EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
-	
-
-
+	//@EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
 }
