@@ -10,7 +10,7 @@ spec:
     - nodePort: 31010
       port: 8080
       targetPort: 8080
-      #protocol: TCP
+      
   selector:
     app: students-app
   type: LoadBalancer
@@ -25,7 +25,7 @@ metadata:
 provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd
-  #zone: us-central1-a
+  
 ---
 # PVC for student-app
 apiVersion: v1
@@ -67,7 +67,7 @@ spec:
       
           ports:
             - containerPort: 8080
-          env:   # Setting Enviornmental Variables
+          env:   
             - name: DB_HOST   
               valueFrom:
                 configMapKeyRef:
@@ -88,10 +88,10 @@ spec:
                 secretKeyRef:
                   name: db-user
                   key: password
-          volumeMounts:        # Mounting volume obtained from Persistent Volume Claim
+          volumeMounts:        
             - name: mystudents-app-persistent-storage
-              mountPath: /var/lib/mnt #This is the path in the container on which the mounting will take place.
+              mountPath: /var/lib/mnt 
       volumes:
-        - name: mystudents-app-persistent-storage # Obtaining 'volume' from PVC
+        - name: mystudents-app-persistent-storage 
           persistentVolumeClaim:
             claimName: students-app-pv-claim
