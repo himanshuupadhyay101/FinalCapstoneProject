@@ -5,8 +5,10 @@ stages
 stage('Compile')
 {
    steps{ 
-      sh "mvn clean compile"
+	   withMaven(jdk: 'java8', maven: 'Maven3'){
+            sh "mvn clean compile"
           }
+   }
 }		
 				
 stage('Testing')
