@@ -69,8 +69,8 @@ branch 'main'
 	sh "kubectl apply -f kubernetes/mysql-configmap.yml"
 	sh "kubectl apply -f kubernetes/mysql-user-secrets.yml"
 	sh "kubectl apply -f kubernetes/mysql-deployment.yml"
-	sh "kubectl apply -f kubernetes/student-deployment.yml"
-		
+	//sh "kubectl apply -f kubernetes/student-deployment.yml"
+        sh "cat kubernetes/student-deployment.yml | sed 's/finalcapstone:latest/finalcapstone:$BUILD_NUMBER/' |kubectl apply -f -"
 		
 		}
             post {
