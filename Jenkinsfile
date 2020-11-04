@@ -73,14 +73,18 @@ branch 'main'
 		
 		
 		}
-            post {
-		    always{       mail to: "himanshu.upadhayay@knoldus.com",
+    post {
+		  always{       mail to: "himanshu.upadhayay@knoldus.com",
                      subject: "Image build succesfully",
                      body: "Hello successfull completion f task, ${env.JOB_NAME} has been build successfully"
                   }
-	    }
-	    }
-  }
+
+           success{
+             cleanWs()
+                }
+
+
+	   }
 
 		
 	   
