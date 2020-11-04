@@ -1,14 +1,18 @@
 pipeline{
 agent any
+	tools { 
+        maven 'Maven 3.6.0'
+        jdk 'jdk8' 
+         }
 stages
 {
 stage('Compile')
 {
    steps{ 
-	   withMaven(jdk: 'java8', maven: 'Maven3'){
+	   
             sh "mvn clean compile"
           }
-   }
+   
 }		
 				
 stage('Testing')
