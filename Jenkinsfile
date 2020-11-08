@@ -1,7 +1,7 @@
 pipeline{
 agent any
 	tools { 
-        maven 'Maven'
+        maven 'Maven3'
         jdk 'jdk' 
     }
 stages
@@ -10,7 +10,7 @@ stage('Compile')
 {
    steps{ 
 	  //sh "mvn clean compile"
-	   withMaven(jdk: 'java', maven: 'Maven'){
+	   withMaven(jdk: 'jdk', maven: 'Maven3'){
 		   sh "mvn compile"
 	   }
 	   echo "Compilation Completed"
