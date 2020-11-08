@@ -10,7 +10,7 @@ stage('Compile')
 {
    steps{ 
 	  //sh "mvn clean compile"
-	   withMaven(jdk: 'java8', maven: 'Maven3'){
+	   withMaven(jdk: 'java', maven: 'Maven'){
 		   sh "mvn compile"
 	   }
 	   echo "Compilation Completed"
