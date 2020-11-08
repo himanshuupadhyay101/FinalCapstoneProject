@@ -9,7 +9,7 @@ stages
 stage('Compile')
 {
    steps{ 
-	  //sh "mvn clean compile"
+	  
 	   withMaven(jdk: 'jdk', maven: 'Maven3'){
 		   sh "mvn compile"
 	   }
@@ -20,7 +20,10 @@ stage('Compile')
 stage('Testing')
 {
    steps{
-     sh "mvn test"
+     
+	    withMaven(jdk: 'jdk', maven: 'Maven3'){
+		   sh "mvn test"
+	   }
      echo "Testing Completed"
         }
 }
@@ -30,7 +33,9 @@ stage('packaging')
 }
 
    steps{
-	sh "mvn package"                                                                  //sbt package vs sbt assembly
+	 withMaven(jdk: 'jdk', maven: 'Maven3'){
+		   sh "mvn package"
+	   }                                                                 
 	}
 }
 stage('build image')
