@@ -70,7 +70,7 @@ stage('push image')
              withCredentials([string(credentialsId: 'DOCKER_HUB_CREDENTIALS', variable: 'DOCKER_HUB_CREDENTIALS')]) {
              echo "pushing the image to the dockerhub registry"
 	         sh "docker login -u himanshu1018 -p ${DOCKER_HUB_CREDENTIALS}"
-             sh " docker push registry:$BUILD_NUMBER"
+		     sh " docker push ${registry}:$BUILD_NUMBER"
 			       }
 	         sh 'docker rmi himanshu1018/finalcapstone:$BUILD_NUMBER'
              sh "echo ###########Local Image removed##########" 
