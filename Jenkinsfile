@@ -42,6 +42,7 @@ branch 'testing'
       script {
         docker.build registry + ":$BUILD_NUMBER"
       }
+	}
 }
 stage('push image')
 {
