@@ -1,6 +1,9 @@
 pipeline{
 agent any
-	
+	environment {
+    registry = "himanshu1018/finalcapstone"
+    registryCredential = 'DOCKER_HUB_CREDENTIALS'
+}
 stages
 {
 stage('Compile')
@@ -20,7 +23,7 @@ stage('Testing')
 }
 stage('packaging')
 {when { 
-	anyOf { branch 'main'; branch 'development' }
+	anyOf { branch 'main'; branch 'development'; branch 'testing' }
 }
 
    steps{
@@ -30,16 +33,20 @@ stage('packaging')
 stage('build image')
 {
 when{
-branch 'main'
+branch 'testing'
      }
-    steps{ 
-	 sh " docker build -t  himanshu1018/finalcapstone:$BUILD_NUMBER ."
-          }
+   // steps{ 
+	// sh " docker build -t  himanshu1018/finalcapstone:$BUILD_NUMBER ."
+        //  }
+	steps{
+      script {
+        docker.build registry + ":$BUILD_NUMBER"
+      }
 }
 stage('push image')
 {
 when{
-branch 'main'
+branch 'testing'
      }
      steps{
      withCredentials([string(credentialsId: 'DOCKER_HUB_CREDENTIALS', variable: 'DOCKER_HUB_CREDENTIALS')]) {
